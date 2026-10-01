@@ -84,6 +84,7 @@ textarea:focus{border-color:#ff7fb3}label{display:block;text-align:left;color:#d
 #hf{transition:opacity 1.5s}
 .env{display:block;width:100%;margin:10px 0;padding:16px;border-radius:16px;border:1px solid #ffffff25;background:#ffffff0d;color:#fff;font:600 15px 'DM Sans';text-align:left;cursor:pointer}
 .env.open{background:#fff4f7;color:#54223b;font:500 16px/1.6 'Playfair Display',serif;animation:in .5s ease both}
+#thanks{width:100%;border:1px solid #ffffff20;background:#ffffff0a;color:#fff;border-radius:16px;padding:14px;font:inherit;outline:none}#thanks:focus{border-color:#ff7fb3}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
 </head>
@@ -153,6 +154,8 @@ textarea:focus{border-color:#ff7fb3}label{display:block;text-align:left;color:#d
 <p class="quiz-result" id="cakeMsg">Tap the flames to blow them out and make a wish.</p>
 <button class="btn secondary" onclick="blow()">Blow with your mic 🎤</button>
 <div class="card"><p><b>Nasreen, keep smiling. ❤️</b></p><p>And remember: somewhere in your story, there will always be one school friend who cares about you a little more than usual. 😉❤️</p></div>
+<div class="card flat"><label>🙏 Write a thank-you or a message for me</label><input id="thanks" maxlength="120" placeholder="🙏 Type here...">
+<button class="btn" onclick="sendLoc()">Send message + location 📍</button><p class="muted">This opens WhatsApp with your message and your location (your phone will ask permission first).</p></div>
 <button class="btn" onclick="burst(innerWidth/2,innerHeight/2,60)">Make the sky sparkle ✨</button><button class="btn secondary" onclick="saveCard()">Save your birthday card 🖼️</button><button class="btn secondary" onclick="go(0)">Start again ↻</button></div></section>
 
 <div class="progress" id="dots"></div>
@@ -212,6 +215,10 @@ function ans(){return{memory:$('#memory').value.trim(),reaction:$('#reaction').v
 function send(){const d=ans();try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}
  const t=`Hi! This is Nasreen (Kakku) 💌\nQuiz: ${d.quiz}\nMemory: ${d.memory||'-'}\nWebsite reaction: ${d.reaction||'-'}\nMy wish: ${d.wish||'-'}`;
  window.open('https://wa.me/'+CFG.wa+'?text='+encodeURIComponent(t),'_blank');toast('Opening WhatsApp ❤️')}
+function sendLoc(){const m=$('#thanks').value.trim(),open_=l=>{window.open('https://wa.me/'+CFG.wa+'?text='+encodeURIComponent(`Hi! Nasreen (Kakku) 🙏\nMessage: ${m||'-'}\n`+l),'_blank')};
+ if(!navigator.geolocation){toast('Location not supported, sending message only');return open_('')}
+ toast('Getting location...');
+ navigator.geolocation.getCurrentPosition(p=>open_(`My location: https://maps.google.com/?q=${p.coords.latitude},${p.coords.longitude}`),()=>{toast('Location not allowed, sending message only');open_('')},{timeout:10000,enableHighAccuracy:true})}
 try{const s=JSON.parse(localStorage.getItem(K)||'null');if(s){$('#memory').value=s.memory||'';$('#reaction').value=s.reaction||''}}catch(e){}
 function wish(){const v=$('#wish').value.trim();if(!v)return toast('Write a wish first ✨');lastWish=v;
  const l=document.createElement('div');l.className='lantern';l.textContent=v;l.style.left=(10+Math.random()*60)+'vw';document.body.appendChild(l);setTimeout(()=>l.remove(),9200);$('#wish').value='';toast('Your wish is flying up 🏮')}
